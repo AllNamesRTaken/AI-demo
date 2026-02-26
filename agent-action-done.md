@@ -258,6 +258,25 @@ Warnings: Mediator source generator conflicts (expected), NU1510 for SignalR pac
 - [x] Wired `ErrorViewModel` into `MainWindowViewModel`
   - Constructor receives injected `ErrorViewModel`
   - `OnErrorReceived` now calls `_error.ShowError(...)`
+
+---
+
+## Completed: 2026-02-26 (Flappy Bird Migration — Phase 1: Contracts)
+
+### Phase 1: Contracts Layer (Completed 2026-02-26)
+- [x] Emptied `IAppHub.cs` and `IAppHubClient.cs` (stub comment — replaced by IGameHub/IGameHubClient)
+- [x] Emptied `DTOs/ItemDto.cs`, `CreateItemDto.cs`, `UpdateItemDto.cs` (stub comment)
+- [x] Created `Enums/GameStatus.cs` — Waiting, Countdown, Running, Ended
+- [x] Created `DTOs/Game/PlayerStateDto.cs` — UserId, DisplayName, Y, VelocityY, IsAlive, Score
+- [x] Created `DTOs/Game/PipeDto.cs` — X, GapTopY
+- [x] Created `DTOs/Game/GameStateDto.cs` — TickNumber, Players, Pipes, Status (GameStatus), CountdownSeconds
+- [x] Created `DTOs/Game/GameRoomDto.cs` — RoomId, Passphrase, Players, Status, MaxPlayers
+- [x] Created `DTOs/Game/GameResultDto.cs` — contains PlayerResultDto (Rank, UserId, DisplayName, Score) + GameResultDto (RoomId, Results, EndedAt)
+- [x] Created `DTOs/Game/JoinRoomDto.cs` — Passphrase, DisplayName
+- [x] Created `Hubs/IGameHub.cs` — CreateOrJoinRoomAsync (idempotent), LeaveRoomAsync, SetReadyAsync, FlapAsync, GetLeaderboardAsync
+- [x] Created `Hubs/IGameHubClient.cs` — game callbacks (OnRoomUpdated, OnGameStarted, OnCountdown, OnGameTick, OnGameEnded, OnPlayerJoined, OnPlayerLeft) + system callbacks (OnError, OnNotification, OnRateLimitExceeded, OnForceDisconnect)
+- **Kept unchanged:** `RateLimitInfo.cs`, `ErrorDto.cs`, `NotificationDto.cs`, `UserPresenceDto.cs`, `Requests/`, `Responses/`
+- **Build Status**: ✅ AiDemo.Contracts builds with 0 errors, 0 warnings
   - New `OnRateLimitExceeded` handler calls `_error.ShowRateLimitWarning(...)`
   - Subscribed to `_hubConnection.RateLimitExceeded` event
 - [x] Registered `ErrorViewModel` (singleton) in `App.axaml.cs`
@@ -267,3 +286,12 @@ Warnings: Mediator source generator conflicts (expected), NU1510 for SignalR pac
 - [x] Client build: **0 errors** ✅
 
 **Status:** ✅ Phases 5.1 and 5.3 complete. Only Phase 5.2 (testing infrastructure) remains.
+
+---
+
+## Completed: 2026-02-27
+
+### Phase 1 Final: build-validate AiDemo.Contracts (Completed 2026-02-27)
+- [x] Ran `dotnet build src/AiDemo.Contracts/AiDemo.Contracts.csproj` via terminal
+- **Result:** `AiDemo.Contracts net10.0 succeeded` — 0 errors, 0 warnings
+- **Build Status**: ✅ AiDemo.Contracts — Phase 1 FULLY COMPLETE

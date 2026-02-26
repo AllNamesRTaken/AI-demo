@@ -1,7 +1,1 @@
-namespace AiDemo.Contracts.DTOs;
-
-public sealed record UpdateItemDto(
-    Guid Id,
-    string Name,
-    string Description
-);
+// Removed as part of Flappy Bird migration.
