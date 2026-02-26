@@ -1,0 +1,94 @@
+## .NET / C#
+
+# Build outputs
+bin/
+bin*/
+**/bin/
+**/bin*/
+obj/
+obj*/
+**/obj/
+**/obj*/
+out/
+*.exe
+*.dll
+*.so
+*.dll.config
+*.pdb
+
+# NuGet
+*.nupkg
+*.snupkg
+.nuget/
+packages/
+!NuGet.Config
+
+# Visual Studio
+.vs/
+*.user
+*.suo
+*.userosscache
+*.sln.docview
+
+# Rider
+.idea/
+*.sln.iml
+
+# VS Code
+.vscode/
+!.vscode/extensions.json
+!.vscode/tasks.json
+!.vscode/launch.json
+
+# Test results
+TestResults/
+coverage/
+*.trx
+*.coveragexml
+
+# Publish output
+publish/
+**/Properties/PublishProfiles/
+
+## .NET specific
+project.lock.json
+project.fragment.lock.json
+
+## Avalonia
+# Generated XAML
+*.g.cs
+*.g.i.cs
+
+## EF Core Migrations (keep migrations, ignore snapshots if preferred)
+# Uncomment if you don't want to track migrations:
+# **/Migrations/
+
+## Logs
+logs/
+*.log
+*.log.*
+
+## OS
+.DS_Store
+Thumbs.db
+desktop.ini
+
+## Environment / secrets
+.env
+.env.*
+!.env.example
+appsettings.Local.json
+appsettings.*.Local.json
+secrets.json
+
+## Docker
+# Keep docker-compose.yml tracked; ignore overrides if present
+docker-compose.override.yml
+
+## Temp / misc
+*.tmp
+*.temp
+*.bak
+*.orig
+*.swp
+*~

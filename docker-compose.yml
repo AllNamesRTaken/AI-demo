@@ -1,0 +1,107 @@
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: aidemo-postgres
+    environment:
+      POSTGRES_DB: aidemo
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_HOST_AUTH_METHOD: md5
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  authentik-postgres:
+    image: postgres:16-alpine
+    container_name: authentik-postgres
+    environment:
+      POSTGRES_DB: authentik
+      POSTGRES_USER: authentik
+      POSTGRES_PASSWORD: authentik-devpass
+    volumes:
+      - authentik_postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U authentik"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  authentik-redis:
+    image: redis:7-alpine
+    container_name: authentik-redis
+    command: --save 60 1 --loglevel warning
+    volumes:
+      - authentik_redis_data:/data
+    healthcheck:
+      test: ["CMD-SHELL", "redis-cli ping | grep PONG"]
+      interval: 5s
+      timeout: 3s
+      retries: 5
+
+  authentik-server:
+    image: ghcr.io/goauthentik/server:2024.2.2
+    container_name: authentik-server
+    command: server
+    environment:
+      AUTHENTIK_SECRET_KEY: "this-is-a-development-secret-key-change-in-production"
+      AUTHENTIK_ERROR_REPORTING__ENABLED: "false"
+      AUTHENTIK_POSTGRESQL__HOST: authentik-postgres
+      AUTHENTIK_POSTGRESQL__NAME: authentik
+      AUTHENTIK_POSTGRESQL__USER: authentik
+      AUTHENTIK_POSTGRESQL__PASSWORD: authentik-devpass
+      AUTHENTIK_REDIS__HOST: authentik-redis
+      AUTHENTIK_BOOTSTRAP_PASSWORD: "admin"
+      AUTHENTIK_BOOTSTRAP_EMAIL: "admin@localhost"
+      AUTHENTIK_BOOTSTRAP_TOKEN: "dev-bootstrap-token"
+    ports:
+      - "9000:9000"
+      - "9443:9443"
+    volumes:
+      - authentik_media:/media
+      - authentik_templates:/templates
+    depends_on:
+      - authentik-postgres
+      - authentik-redis
+    healthcheck:
+      test: ["CMD-SHELL", "wget --no-verbose --tries=1 --spider http://localhost:9000/-/health/live/ || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  authentik-worker:
+    image: ghcr.io/goauthentik/server:2024.2.2
+    container_name: authentik-worker
+    command: worker
+    environment:
+      AUTHENTIK_SECRET_KEY: "this-is-a-development-secret-key-change-in-production"
+      AUTHENTIK_ERROR_REPORTING__ENABLED: "false"
+      AUTHENTIK_POSTGRESQL__HOST: authentik-postgres
+      AUTHENTIK_POSTGRESQL__NAME: authentik
+      AUTHENTIK_POSTGRESQL__USER: authentik
+      AUTHENTIK_POSTGRESQL__PASSWORD: authentik-devpass
+      AUTHENTIK_REDIS__HOST: authentik-redis
+    volumes:
+      - authentik_media:/media
+      - authentik_templates:/templates
+      - /var/run/docker.sock:/var/run/docker.sock
+    depends_on:
+      - authentik-postgres
+      - authentik-redis
+
+volumes:
+  postgres_data:
+    driver: local
+  authentik_postgres_data:
+    driver: local
+  authentik_redis_data:
+    driver: local
+  authentik_media:
+    driver: local
+  authentik_templates:
+    driver: local

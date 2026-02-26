@@ -1,0 +1,63 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:vm="using:AvaloniaApp.ViewModels"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        mc:Ignorable="d" d:DesignWidth="400" d:DesignHeight="300"
+        x:Class="AvaloniaApp.Views.LoginView"
+        x:DataType="vm:LoginViewModel"
+        Title="Login - AI Demo"
+        Width="400"
+        Height="300"
+        WindowStartupLocation="CenterScreen">
+
+    <Design.DataContext>
+        <vm:LoginViewModel/>
+    </Design.DataContext>
+
+    <Grid RowDefinitions="*,Auto" Margin="20">
+        <StackPanel Grid.Row="0" 
+                    VerticalAlignment="Center" 
+                    Spacing="20">
+            <TextBlock Text="AI Demo Login" 
+                       FontSize="24" 
+                       FontWeight="Bold" 
+                       HorizontalAlignment="Center"/>
+            
+            <TextBlock Text="Click the button below to log in with Authentik" 
+                       FontSize="14" 
+                       TextWrapping="Wrap"
+                       HorizontalAlignment="Center"
+                       TextAlignment="Center"/>
+            
+            <TextBlock Text="{Binding ErrorMessage}" 
+                       Foreground="Red" 
+                       TextWrapping="Wrap"
+                       HorizontalAlignment="Center"
+                       TextAlignment="Center"
+                       IsVisible="{Binding ErrorMessage, Converter={x:Static StringConverters.IsNotNullOrEmpty}}"/>
+            
+            <Button Content="Login with Authentik" 
+                    Command="{Binding LoginCommand}"
+                    IsEnabled="{Binding !IsLoggingIn}"
+                    HorizontalAlignment="Center"
+                    MinWidth="200"
+                    Padding="20,10"/>
+            
+            <TextBlock Text="Your browser will open for authentication" 
+                       FontSize="12" 
+                       Foreground="Gray" 
+                       TextWrapping="Wrap"
+                       HorizontalAlignment="Center"
+                       TextAlignment="Center"
+                       IsVisible="{Binding IsLoggingIn}"/>
+        </StackPanel>
+
+        <TextBlock Grid.Row="1" 
+                   Text="Authenticates via Authentik OIDC (http://localhost:9000)" 
+                   FontSize="10" 
+                   Foreground="Gray" 
+                   TextWrapping="Wrap"/>
+    </Grid>
+
+</Window>
