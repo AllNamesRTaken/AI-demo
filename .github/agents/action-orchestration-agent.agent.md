@@ -1,6 +1,6 @@
 ---
 description: 'Orchestrates task execution by spawning action-subagent for each task. Owns all tracking file management; delegates implementation work to keep its own context lean.'
-tools: ['read', 'edit', 'todo', 'agent']
+tools: ['read', 'edit', 'todo', 'agent', 'search', 'execute', 'web']
 agents: ['action-subagent']
 ---
 

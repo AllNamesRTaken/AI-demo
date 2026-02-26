@@ -1,11 +1,11 @@
 ---
-description: 'Given a feature/entity name, produces the canonical 8-step task checklist and file scaffolding plan following the project architecture conventions.'
+description: 'Given a feature/entity name, discovers the project layout and produces a ready-to-execute task checklist and file scaffolding plan. Generic and reusable across Clean Architecture projects.'
 tools: ['read', 'search']
 ---
 
 # Skill: scaffold-feature
 
-Produce a complete, ready-to-execute implementation plan for a new feature, following the conventions in AGENTS.md and ARCHITECTURE.md.
+Produce a complete, ready-to-execute implementation plan for a new feature by first discovering the actual project structure, then generating a fully resolved plan with no hardcoded assumptions.
 
 ## Usage
 
@@ -20,141 +20,135 @@ Optionally specify which operations are needed:
 
 ## Procedure
 
-1. Read `AGENTS.md` to confirm current naming conventions and the quick-reference checklist.
-2. Read `src/AiDemo.Contracts/Hubs/IAppHub.cs` and `IAppHubClient.cs` to understand existing patterns.
-3. Read one existing Command + Handler pair (e.g., `src/AiDemo.Application/Commands/CreateItem/`) for code style reference.
-4. Generate the output below.
+### Step 1 — Discover architecture
+
+Read `ARCHITECTURE.md` (fall back to `README.md`) to identify:
+- Layer names and their `src/` paths (Domain, Application, Contracts/Shared, Infrastructure, Server, Client)
+- Root namespace prefix (infer from `.csproj` filenames under `src/`)
+- RPC mechanism (SignalR, gRPC, REST, etc.)
+- ORM in use and whether an outbox pattern is present
+- Mediator library (MediatR, martinothamar/Mediator, etc.)
+- Whether idempotency keys are used on mutating operations
+
+### Step 2 — Locate key files
+
+Search `src/` to resolve each placeholder in the table below. Record the actual relative path found, or `N/A` if the concept does not exist in this project.
+
+| Placeholder | What to search for |
+|-------------|-------------------|
+| `{DomainLayer}` | Directory containing domain entities (e.g. classes with `CreatedAt`, no external deps) |
+| `{ContractsLayer}` | Directory containing shared DTOs / hub interfaces |
+| `{ApplicationLayer}` | Directory containing commands, queries, handlers |
+| `{InfrastructureLayer}` | Directory containing ORM context / repositories |
+| `{ServerLayer}` | Directory containing the host entry point and hub implementation |
+| `{ClientLayer}` | Directory containing the client-side connection service |
+| `{HubServerInterface}` | Interface defining client→server RPC methods |
+| `{HubClientInterface}` | Interface defining server→client callback methods |
+| `{HubImpl}` | Concrete hub class implementing `{HubServerInterface}` |
+| `{DbContext}` | ORM context class file |
+| `{ClientService}` | Client-side hub connection / service wrapper |
+| `{CommandExample}` | An existing command folder to use as style reference |
+
+### Step 3 — Read style reference
+
+Read the files in `{CommandExample}` to infer:
+- Mediator attribute(s) on the command record (e.g. `[GenerateMediator]`)
+- Command base interface and its generic form (e.g. `ICommand<T>`, `IIdempotentCommand<T>`)
+- Handler base interface (e.g. `ICommandHandler<TCommand, TResult>`)
+- Whether idempotency key is a nullable `Guid?` property on the command
+- Namespace convention (e.g. `{Namespace}.Application.Commands.{CommandName}`)
+
+### Step 4 — Resolve and generate
+
+Substitute all discovered values into the output format below.
+
+Apply the degradation rules in the table below **before** writing the output. Each conditional item must be **silently dropped** (not mentioned, not listed as N/A) when its guard condition is false. Only items marked "always" are unconditional.
+
+| Item | Include when |
+|------|-------------|
+| Create input DTO | `(CRUD)` mode — always for CRUD |
+| Update input DTO | `(CRUD)` mode |
+| Update command + handler + validator | `(CRUD)` mode |
+| Delete command + handler | `(CRUD)` mode |
+| Validator file | A validation library was detected in `{CommandExample}` or `.csproj` deps |
+| "Files to modify" row: `{HubServerInterface}` | `{HubServerInterface}` ≠ N/A |
+| "Files to modify" row: `{HubClientInterface}` | `{HubClientInterface}` ≠ N/A |
+| "Files to modify" row: `{HubImpl}` | `{HubImpl}` ≠ N/A |
+| "Files to modify" row: `{DbContext}` | `{DbContext}` ≠ N/A |
+| "Files to modify" row: `{ClientService}` | `{ClientService}` ≠ N/A |
+| Checklist: hub method signatures | `{HubServerInterface}` ≠ N/A |
+| Checklist: hub callback signatures | `{HubClientInterface}` ≠ N/A |
+| Checklist: implement hub methods | `{HubImpl}` ≠ N/A |
+| Checklist: outbox mention | `{HasOutbox}` = yes |
+| Checklist: idempotency keys mention | `{IdempotentCommandInterface}` ≠ N/A |
+| Checklist: DbSet / ORM config | `{DbContext}` ≠ N/A |
+| Checklist: ORM migration | `{InfrastructureLayer}` ≠ N/A AND `{DbContext}` ≠ N/A |
+| Checklist: client wrappers | `{ClientService}` ≠ N/A |
 
 ## Output format
 
 ```
 ## Scaffold Plan: <FeatureName>
 
+### Resolved project layout
+
+| Placeholder | Resolved value |
+|-------------|----------------|
+| {DomainLayer} | <path> |
+| {ContractsLayer} | <path> |
+| {ApplicationLayer} | <path> |
+| {InfrastructureLayer} | <path or N/A> |
+| {ServerLayer} | <path> |
+| {ClientLayer} | <path or N/A> |
+| {HubServerInterface} | <file or N/A> |
+| {HubClientInterface} | <file or N/A> |
+| {HubImpl} | <file or N/A> |
+| {DbContext} | <file or N/A> |
+| {ClientService} | <file or N/A> |
+| {Namespace} | <root namespace> |
+| {MediatorAttr} | <attribute or N/A> |
+| {CommandInterface} | <interface or N/A> |
+| {IdempotentCommandInterface} | <interface or N/A> |
+| {HandlerInterface} | <interface or N/A> |
+| {HasOutbox} | yes / no |
+
 ### New files to create
 
 | # | File path | Purpose |
 |---|-----------|---------|
-| 1 | src/AiDemo.Domain/Entities/<Feature>.cs | Domain entity |
-| 2 | src/AiDemo.Contracts/DTOs/<Feature>Dto.cs | Response DTO (sealed record) |
-| 3 | src/AiDemo.Contracts/DTOs/Create<Feature>Dto.cs | Create input DTO |
-| 4 | src/AiDemo.Contracts/DTOs/Update<Feature>Dto.cs | Update input DTO (omit if read-only) |
-| 5 | src/AiDemo.Application/Commands/Create<Feature>/Create<Feature>Command.cs | Command record |
-| 6 | src/AiDemo.Application/Commands/Create<Feature>/Create<Feature>Handler.cs | Handler |
-| 7 | src/AiDemo.Application/Commands/Create<Feature>/Create<Feature>Validator.cs | FluentValidation validator |
-| 8 | src/AiDemo.Application/Commands/Update<Feature>/... | (omit if read-only) |
-| 9 | src/AiDemo.Application/Commands/Delete<Feature>/... | (omit if read-only) |
-| 10 | src/AiDemo.Application/Queries/Get<Feature>s/Get<Feature>sQuery.cs | List query |
-| 11 | src/AiDemo.Application/Queries/Get<Feature>ById/Get<Feature>ByIdQuery.cs | Single query |
+| 1 | {DomainLayer}/<Feature>.cs | Domain entity |
+| 2 | {ContractsLayer}/DTOs/<Feature>Dto.cs | Response DTO |
+| 3 | {ContractsLayer}/DTOs/Create<Feature>Dto.cs | Create input DTO |
+| 4 | {ContractsLayer}/DTOs/Update<Feature>Dto.cs | Update input DTO (omit if read-only) |
+| 5 | {ApplicationLayer}/Commands/Create<Feature>/Create<Feature>Command.cs | Command record |
+| 6 | {ApplicationLayer}/Commands/Create<Feature>/Create<Feature>Handler.cs | Handler |
+| 7 | {ApplicationLayer}/Commands/Create<Feature>/Create<Feature>Validator.cs | Validator (if validation library present) |
+| 8 | {ApplicationLayer}/Commands/Update<Feature>/... | (omit if read-only) |
+| 9 | {ApplicationLayer}/Commands/Delete<Feature>/... | (omit if read-only) |
+| 10 | {ApplicationLayer}/Queries/Get<Feature>s/Get<Feature>sQuery.cs | List query |
+| 11 | {ApplicationLayer}/Queries/Get<Feature>ById/Get<Feature>ByIdQuery.cs | Single-item query |
 
 ### Files to modify
 
 | File | Change |
 |------|--------|
-| src/AiDemo.Contracts/Hubs/IAppHub.cs | Add Create/Update/Delete/Get methods with idempotency keys on mutating ops |
-| src/AiDemo.Contracts/Hubs/IAppHubClient.cs | Add On<Feature>Created / On<Feature>Updated / On<Feature>Deleted callbacks |
-| src/AiDemo.Server/Hubs/AppHub.cs | Implement new IAppHub methods, dispatch via mediator, outbox for notifications |
-| src/AiDemo.Infrastructure/Persistence/AppDbContext.cs | Add DbSet<<Feature>> and EF configuration |
-| src/AvaloniaApp/Services/HubConnectionService.cs | Add client-side InvokeAsync wrappers and On<> callback registrations |
-
-### Code templates
-
-#### Domain entity — src/AiDemo.Domain/Entities/<Feature>.cs
-\`\`\`csharp
-namespace AiDemo.Domain.Entities;
-
-public sealed class <Feature>
-{
-    public Guid Id { get; private set; } = Guid.NewGuid();
-    public string Name { get; private set; } = string.Empty;
-    // TODO: add domain-specific properties
-    public DateTime CreatedAt { get; private set; } = DateTime.UtcNow;
-    public DateTime? UpdatedAt { get; private set; }
-    public Guid CreatedByUserId { get; private set; }
-
-    private <Feature>() { }
-
-    public static <Feature> Create(string name, Guid createdByUserId)
-    {
-        return new <Feature> { Name = name, CreatedByUserId = createdByUserId };
-    }
-
-    public void Update(string name)
-    {
-        Name = name;
-        UpdatedAt = DateTime.UtcNow;
-    }
-}
-\`\`\`
-
-#### Response DTO — src/AiDemo.Contracts/DTOs/<Feature>Dto.cs
-\`\`\`csharp
-namespace AiDemo.Contracts.DTOs;
-
-public sealed record <Feature>Dto(
-    Guid Id,
-    string Name,
-    // TODO: add domain-specific properties
-    DateTime CreatedAt,
-    DateTime? UpdatedAt,
-    Guid CreatedByUserId
-);
-\`\`\`
-
-#### Command — src/AiDemo.Application/Commands/Create<Feature>/Create<Feature>Command.cs
-\`\`\`csharp
-using AiDemo.Application.Interfaces;
-using AiDemo.Contracts.DTOs;
-using Mediator;
-
-namespace AiDemo.Application.Commands.Create<Feature>;
-
-[GenerateMediator]
-public sealed partial record Create<Feature>Command(
-    string Name,
-    // TODO: add domain-specific properties
-    Guid UserId,
-    Guid? IdempotencyKey = null
-) : IIdempotentCommand<<Feature>Dto>;
-\`\`\`
-
-#### IAppHub additions
-\`\`\`csharp
-// Mutating — include idempotency key
-Task<<Feature>Dto> Create<Feature>Async(Create<Feature>Dto dto, Guid? idempotencyKey = null);
-Task<<Feature>Dto> Update<Feature>Async(Update<Feature>Dto dto, Guid? idempotencyKey = null);
-Task Delete<Feature>Async(Guid id, Guid? idempotencyKey = null);
-// Read
-Task<<Feature>Dto?> Get<Feature>ByIdAsync(Guid id);
-Task<IEnumerable<<Feature>Dto>> Get<Feature>sAsync();
-\`\`\`
-
-#### IAppHubClient additions
-\`\`\`csharp
-Task On<Feature>Created(<Feature>Dto item);
-Task On<Feature>Updated(<Feature>Dto item);
-Task On<Feature>Deleted(Guid id);
-\`\`\`
-
-### Outbox message types to register
-
-| Event | Outbox message type string |
-|-------|---------------------------|
-| Created | `<Feature>Created` |
-| Updated | `<Feature>Updated` |
-| Deleted | `<Feature>Deleted` |
+| {HubServerInterface} | Add Create/Update/Delete/Get method signatures; idempotency keys on mutating ops if {IdempotentCommandInterface} ≠ N/A |
+| {HubClientInterface} | Add On<Feature>Created / On<Feature>Updated / On<Feature>Deleted callbacks |
+| {HubImpl} | Implement new methods: mediator dispatch + outbox message (if {HasOutbox} = yes) |
+| {DbContext} | Add DbSet<<Feature>> and any EF configuration |
+| {ClientService} | Add InvokeAsync wrappers and On<> callback registrations |
 
 ### Checklist for action-agent
 
-- [ ] Create Domain entity
-- [ ] Create Contracts DTOs (response + create + update)
-- [ ] Add IAppHub methods (with idempotency keys on mutating operations)
-- [ ] Add IAppHubClient callbacks
-- [ ] Create Application Commands (create / update / delete) with handlers and validators
-- [ ] Create Application Queries (list + by-id) with handlers
-- [ ] Add DbSet and EF configuration in AppDbContext
-- [ ] Implement hub methods in AppHub.cs (mediator dispatch + outbox)
-- [ ] Add client wrappers in HubConnectionService.cs
-- [ ] Add EF migration: `dotnet ef migrations add Add<Feature>`
-- [ ] Run build-validate to confirm no compile errors
-- [ ] Run verify-contracts to confirm hub interface and implementations are in sync
+- [ ] Create Domain entity in {DomainLayer}
+- [ ] Create Contracts DTOs (response + create + update) in {ContractsLayer}
+- [ ] Add method signatures to {HubServerInterface} (idempotency keys on mutating ops)
+- [ ] Add callback signatures to {HubClientInterface}
+- [ ] Create Application Commands (create / update / delete) with handlers and validators in {ApplicationLayer}
+- [ ] Create Application Queries (list + by-id) with handlers in {ApplicationLayer}
+- [ ] Add DbSet and ORM configuration in {DbContext}
+- [ ] Implement hub methods in {HubImpl} (mediator dispatch + outbox if {HasOutbox} = yes)
+- [ ] Add client wrappers in {ClientService}
+- [ ] Add ORM migration (command inferred from {InfrastructureLayer} tooling)
+- [ ] Run build-validate (follow `.github/skills/build-validate.skill.md`) to confirm no compile errors
 ```

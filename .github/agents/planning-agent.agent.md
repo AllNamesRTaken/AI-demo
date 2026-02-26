@@ -55,12 +55,46 @@ Follow the **[tracking-sync skill](.github/skills/tracking-sync.skill.md)** with
 
 **Phase 2: Planning**
 1. Analyze user requirements against discovered project structure
-2. Web search for best practices, framework-specific patterns, similar solutions
-3. Validate external dependencies (check official docs, GitHub repos if needed)
-4. Break down solution into clear, sequenced tasks
-5. Create agent-action-todo.md with actionable implementation tasks
-6. Create agent-action-internal.md with context, decisions, dependencies
-7. Update agent-planning-todo.md → invoke manage_todo_list → move to done.md
+2. **Choose a planning strategy** (see table below) before breaking down tasks
+3. Web search for best practices, framework-specific patterns, similar solutions
+4. Validate external dependencies (check official docs, GitHub repos if needed)
+5. Break down solution into clear, sequenced tasks using the chosen strategy
+6. Create agent-action-todo.md with actionable implementation tasks
+7. Create agent-action-internal.md with context, decisions, dependencies
+8. Update agent-planning-todo.md → invoke manage_todo_list → move to done.md
+
+**Planning strategy selection**
+
+| Request type | Strategy | Approach |
+|-------------|----------|---------|
+| Adding a new feature / entity | **Vertical** | Follow the **[scaffold-feature skill](.github/skills/scaffold-feature.skill.md)** — it produces a discovery-driven, layer-complete plan per feature where every build checkpoint must be clean |
+| Refactoring, migrating, or replacing existing functionality | **Horizontal** | Plan layer-by-layer (Contracts → Domain → Application → Infrastructure → Server → Client); some build checkpoints will be compile-check only |
+| Mix of new features + refactor | Split | Use scaffold-feature for the new feature portions; use horizontal phasing for the refactor portions; keep them in separate phases |
+
+When using the scaffold-feature skill, invoke its procedure and paste its resolved output directly into `agent-action-todo.md` as the task list — do not rewrite it from scratch.
+
+**Build checkpoint rules (apply when writing agent-action-todo.md)**
+
+After every phase that touches compiled code, append a build-validate task as the **last item in that phase**. Use one of two labels:
+
+- `build-validate <target> — must be clean`: use when the phase completes a self-contained layer with no unresolved cross-layer dependencies. Fix any errors before proceeding.
+- `build-validate <target> — compile-check only (errors expected)`: use when the plan is **horizontal** (layers implemented top-to-bottom) and the current phase deliberately leaves a dependent layer incomplete. The purpose is to catch *unexpected* errors (typos, wrong types); anticipated interface-mismatch errors are acceptable and documented.
+
+For horizontal (layer-by-layer) plans, the typical pattern is:
+
+| Phase type | Expected build outcome |
+|------------|----------------------|
+| Contracts / shared types only | must be clean |
+| Domain (no external deps) | must be clean |
+| Application layer — updates interface but not implementation | compile-check only (errors expected) |
+| Infrastructure — implements updated interface | must be clean |
+| Server | must be clean |
+| Client | must be clean |
+| UI-only (views, markup) | must be clean |
+
+For **vertical** (feature-slice) plans every phase should produce a clean build; use `must be clean` throughout.
+
+Always note in `agent-action-internal.md` which phases are expected to have compile errors and why, so the action agent is not surprised.
 
 **Phase 3: Validation**
 1. Review plan completeness: all requirements addressed?
