@@ -77,15 +77,12 @@ For each unchecked task in order:
 1. Build the context packet with task + relevant context excerpt (memory, and file excerpts from any of the context files).
 2. Invoke `action-subagent-v1` with the packet
 3. Parse the returned result (Status / What changed / Verification / Subtasks / Blockers)
-4. If the status is **SUCCESS or PARTIAL**: use the **[tracking-sync skill]** to update tracking files; log result in `agent-action-done.md`
-5. If the status is  **BLOCKED or FAILED**: log in `agent-action-done.md` with blockers noted; add a `[BLOCKED]` prefix to the task in `agent-action-todo.md`; continue to next task
-6. If **Subtasks discovered**: append each to `agent-action-todo.md`; invoke `manage_todo_list` before continuing. Otherwise say `No Subtasks discovered`.
-7. If any context affecting change is detected; **Mandatory** invoke `context-subagent-v1` before moving to the next task; otherwise say `No context changes detected`.
+4. If **Subtasks** was discovered: append each to `agent-action-todo.md`; invoke `manage_todo_list` before continuing. Otherwise say `No Subtasks discovered`.
 
 **Phase 3: Completion**
 1. Verify all tasks processed (no unchecked items without BLOCKED prefix)
 2. Summarize blocked tasks for the user
-3. Update `agent-action-internal.md` with completion summary
+3. If any context affecting change is detected; **Mandatory** invoke `context-subagent-v1`; otherwise say `No context changes detected`.
 
 ## Error Recovery
 

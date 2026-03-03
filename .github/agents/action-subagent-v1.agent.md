@@ -23,7 +23,8 @@ If the task description is missing or ambiguous, state the ambiguity clearly in 
 2. **Verify current state**: Read relevant files before editing to confirm actual content.
 3. **Execute**: Create/edit files, run commands, implement the change.
 4. **Verify result**: Confirm the change is correct — re-read edited files, check build output, run tests if applicable.
-5. **Return result**: Output a structured summary (see below). **Nothing else**.
+5. Consult the **tracking-sync** skill to update tracking files as needed based on the task outcome. Use the **Namespace** `action` to operate on the files: agent-action-internal.md, agent-action-todo.md, agent-action-done.md. If the status is  **BLOCKED or FAILED**, mark with `[BLOCKED]` or `[FAILED]` prefix to the task in `agent-action-todo.md`.
+6. **Return result**: Output a structured summary (see below). **Nothing else**.
 
 ## Result Format
 
@@ -39,7 +40,6 @@ Blockers: <what prevented completion, or "None">
 
 ## Rules
 
-- **Do not** read or write `agent-action-*.md` tracking files — they are outside your scope.
 - **Do not** invoke `manage_todo_list` — not your responsibility.
 - **Do** parallelize independent reads when gathering context.
 - **Do** report partial completion honestly — do not mark SUCCESS if any part failed.
