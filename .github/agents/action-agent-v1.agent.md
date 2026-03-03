@@ -1,7 +1,7 @@
 ---
 description: 'Specialized agent for executing planned tasks from tracking files.'
 tools: ['search', 'edit', 'read', 'execute', 'todo', 'web']
-disable-model-invocation: true
+disable-model-invocation: false
 ---
 
 # Action Agent

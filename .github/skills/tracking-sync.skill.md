@@ -40,9 +40,9 @@ After **every** completed task, in this exact order:
 
 1. Mark the checkbox `[x]` in `agent-{namespace}-todo.md`.
 2. Invoke `manage_todo_list` with updated statuses.
-3. Move the completed task entry to `agent-{namespace}-done.md` (with timestamp).
+3. Move the completed task entry verbatim to `agent-{namespace}-done.md` and add a timestamp.
 4. Remove it from `agent-{namespace}-todo.md`.
-5. If execution revealed new subtasks, append them to `todo.md` and invoke `manage_todo_list` again before continuing.
+5. If execution revealed new subtasks, append them to `agent-{namespace}-todo.md` and invoke `manage_todo_list` again before continuing.
 
 ## Prefix Support
 
