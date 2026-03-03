@@ -1,6 +1,6 @@
 ---
+name: scaffold-feature
 description: 'Given a feature/entity name, discovers the project layout and produces a ready-to-execute task checklist and file scaffolding plan. Generic and reusable across Clean Architecture projects.'
-tools: ['read', 'search']
 ---
 
 # Skill: scaffold-feature

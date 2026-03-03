@@ -1,6 +1,6 @@
 ---
+name: tracking-sync
 description: 'Canonical tracking file lifecycle used by all agents: initialization, manage_todo_list synchronization, per-task update loop, and prefix support.'
-tools: ['edit', 'todo']
 ---
 
 # Skill: tracking-sync

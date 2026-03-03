@@ -1,6 +1,6 @@
 ---
+name: verify-contracts
 description: 'Discovers RPC contract interfaces and their implementations, then verifies every declared method is fully implemented on both server and client sides.'
-tools: ['read', 'search']
 ---
 
 # Skill: verify-contracts

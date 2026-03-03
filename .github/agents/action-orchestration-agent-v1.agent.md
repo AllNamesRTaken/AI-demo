@@ -10,9 +10,14 @@ You are a task orchestrator. Your job is to loop over planned tasks, spawn the *
 
 ## First Action: Initialization (MANDATORY)
 
-Follow the **[tracking-sync skill](../skills/tracking-sync.skill.md)** with:
-- **Namespace**: `action` → files are `agent-action-internal.md`, `agent-action-todo.md`, `agent-action-done.md`
-- **When files are missing**: ask the user to run planning-agent first
+Consult the **tracking-sync** skill to synchronize the project’s tracking files:
+Use the **Namespace** `action` to operate on the files:
+- agent-action-internal.md
+- agent-action-todo.md
+- agent-action-done.md
+
+If any of these files are missing, ask the user to run the planning-agent first to generate them.
+Parse checkbox tasks from `agent-action-todo.md`; preserve task order and dependencies
 
 **Begin execution only after `manage_todo_list` is invoked and UI is visible.**
 
@@ -63,10 +68,10 @@ For each unchecked task in order:
 1. Build the context packet (task + relevant internal.md excerpt)
 2. Invoke `action-subagent-v1` with the packet
 3. Parse the returned result (Status / What changed / Verification / Subtasks / Blockers)
-4. If **SUCCESS or PARTIAL**: follow tracking-sync skill per-task update loop; log result in `agent-action-done.md`
-5. If **BLOCKED or FAILED**: log in `agent-action-done.md` with blockers noted; add a `[BLOCKED]` prefix to the task in `agent-action-todo.md`; continue to next task
+4. If the status is **SUCCESS or PARTIAL**: use the **[tracking-sync skill]** to update tracking files; log result in `agent-action-done.md`
+5. If the status is  **BLOCKED or FAILED**: log in `agent-action-done.md` with blockers noted; add a `[BLOCKED]` prefix to the task in `agent-action-todo.md`; continue to next task
 6. If **Subtasks discovered**: append each to `agent-action-todo.md`; invoke `manage_todo_list` before continuing
-7. Discern if any changes were made that affect context such as the architecture, file structures, or dependencies; if so invoke the `context-subagent-v1` with this information.
+7. Discern if any changes were made that affect context beyond the tracking files such as the architecture, file structures, or dependencies; if so invoke the `context-subagent-v1` with this information. Otherwise skip step.
 
 **Phase 3: Completion**
 1. Verify all tasks processed (no unchecked items without BLOCKED prefix)

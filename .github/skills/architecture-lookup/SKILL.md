@@ -1,6 +1,6 @@
 ---
+name: architecture-lookup
 description: 'Answers "does this approach follow the project architecture?" by consulting ARCHITECTURE.md and AGENTS.md, then gives a clear verdict with references.'
-tools: ['read', 'search', 'web']
 ---
 
 # Skill: architecture-lookup

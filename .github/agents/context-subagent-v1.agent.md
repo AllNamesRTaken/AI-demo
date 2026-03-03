@@ -2,7 +2,6 @@
 name: context-subagent-v1
 description: 'Specialized agent for updating context and tracking files.'
 tools: ['search', 'edit', 'read', 'execute']
-disable-model-invocation: true
 ---
 
 # Context Sub-Agent

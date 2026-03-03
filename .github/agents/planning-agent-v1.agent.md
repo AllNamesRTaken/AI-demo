@@ -1,7 +1,6 @@
 ---
 description: 'Specialized agent for planning work to be performed by other agents.'
 tools: ['search', 'edit', 'read', 'web', 'todo']
-disable-model-invocation: true
 ---
 
 # Planning Agent
@@ -10,8 +9,8 @@ You are a specialized AI agent for planning work to be performed by other agents
 
 ## First Action: Planning Initialization (MANDATORY)
 
-Follow the **[tracking-sync skill](.github/skills/tracking-sync.skill.md)** with:
-- **Namespace**: `planning` → files are `agent-planning-internal.md`, `agent-planning-todo.md`, `agent-planning-done.md`
+Consult the **tracking-sync** skill to synchronize the planning tracking files.
+Use the **Namespace** `planning` to use the files `agent-planning-internal.md`, `agent-planning-todo.md`, and `agent-planning-done.md`
 - **When files are missing**: create them with a Phase 1–4 breakdown + parallelization strategy
 - **Typical task count**: 8–20 for large projects
 

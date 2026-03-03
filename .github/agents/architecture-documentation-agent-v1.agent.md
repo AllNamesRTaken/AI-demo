@@ -1,7 +1,6 @@
 ---
 description: 'Analyzes project structure, aggregates existing documentation and code files, and creates organized architecture documentation in a separate folder with indexed file structure.'
 tools: ['search', 'edit', 'todo']
-disable-model-invocation: true
 ---
 
 # Architecture Documentation Agent

@@ -1,6 +1,6 @@
 ---
+name: build-validate
 description: 'Discovers buildable projects in the workspace and runs the appropriate build tool, returning a structured summary of errors and warnings.'
-tools: ['execute', 'read', 'search']
 ---
 
 # Skill: build-validate
