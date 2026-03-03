@@ -51,3 +51,13 @@ Blockers: <what prevented completion, or "None">
 - **File not found** → Search for it; if still missing, report BLOCKED.
 - **Command fails** → Report exact error in Blockers, return FAILED or PARTIAL.
 - **Scope creep** → Execute only the stated task; list additional work under Subtasks discovered.
+
+## Platform Notes
+
+The semicolon (`;`) in powershell, i.e. in dotnet build, is treated as a statement separator. Use the safe form instead with quotes instead:
+
+```powershell
+dotnet build path/to/project.csproj "-consoleloggerparameters:NoSummary;ForceNoAlign"
+```
+
+

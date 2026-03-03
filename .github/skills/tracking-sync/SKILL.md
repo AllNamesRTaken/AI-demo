@@ -38,10 +38,10 @@ agent-{namespace}-done.md
 
 After **every** completed task, in this exact order:
 
-1. Mark the checkbox `[x]` in `agent-{namespace}-todo.md`.
+1. **Mark** the checkbox `[x]` in `agent-{namespace}-todo.md`.
 2. Invoke `manage_todo_list` with updated statuses.
-3. Move the checked tasks verbatim to `agent-{namespace}-done.md` and add a timestamp.
-4. Explicitly remove checked tasks from `agent-{namespace}-todo.md`.
+3. **Move** the checked tasks verbatim to `agent-{namespace}-done.md` and add a timestamp.
+4. **Replace** tasks from `agent-{namespace}-todo.md` with blank. This keeps the file concise and prevents context bleed.
 5. If execution revealed new subtasks, append them to `agent-{namespace}-todo.md` and invoke `manage_todo_list` again before continuing.
 
 ## Prefix Support

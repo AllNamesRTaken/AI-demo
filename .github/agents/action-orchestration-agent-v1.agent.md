@@ -59,12 +59,19 @@ Read file using `read_file` in blocks of 400 lines until EOF (i.e. `read_file` r
 ## Workflow
 
 **Phase 1: Load Plan**
-1. Read full `AGENTS.md` and `ARCHITECTURE.md` to understand project conventions and architecture rules. Located in project root.
+
+> ⛔ **GATE — do not dispatch a single task until all 4 steps below are complete.**
+
+1. Read full `AGENTS.md` and `ARCHITECTURE.md` to understand project conventions and architecture rules. Located in project root. **Both files are mandatory — skipping either is not allowed.**
 2. Read full `agent-action-internal.md` (extract per-task slices during dispatch)
 3. Read `agent-action-todo.md` until relevant tasks are read, depending on prompt.
 4. Invoke `manage_todo_list` with identified tasks
 
+After step 4, confirm internally: *"I have read AGENTS.md, ARCHITECTURE.md, agent-action-internal.md, and agent-action-todo.md."* Only then proceed to Phase 2.
+
 **Phase 2: Orchestration Loop**
+
+> ⛔ **The orchestrator never runs commands or edits source files directly. ALL tasks — including build-validate tasks — must be dispatched to `action-subagent-v1`. The orchestrator only manages tracking files.**
 
 For each unchecked task in order:
 1. Build the context packet (task + relevant internal.md excerpt)
@@ -73,7 +80,8 @@ For each unchecked task in order:
 4. If the status is **SUCCESS or PARTIAL**: use the **[tracking-sync skill]** to update tracking files; log result in `agent-action-done.md`
 5. If the status is  **BLOCKED or FAILED**: log in `agent-action-done.md` with blockers noted; add a `[BLOCKED]` prefix to the task in `agent-action-todo.md`; continue to next task
 6. If **Subtasks discovered**: append each to `agent-action-todo.md`; invoke `manage_todo_list` before continuing
-7. Discern if any changes were made that affect context beyond the tracking files such as the architecture, file structures, or dependencies; if so invoke the `context-subagent-v1` with this information. Otherwise skip step.
+7. **Mandatory** invoke `context-subagent-v1` before moving to the next task.
+   If **all** triggers are NO → skip and continue.
 
 **Phase 3: Completion**
 1. Verify all tasks processed (no unchecked items without BLOCKED prefix)

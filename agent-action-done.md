@@ -295,3 +295,14 @@ Warnings: Mediator source generator conflicts (expected), NU1510 for SignalR pac
 - [x] Ran `dotnet build src/AiDemo.Contracts/AiDemo.Contracts.csproj` via terminal
 - **Result:** `AiDemo.Contracts net10.0 succeeded` — 0 errors, 0 warnings
 - **Build Status**: ✅ AiDemo.Contracts — Phase 1 FULLY COMPLETE
+
+---
+
+## Completed: 2026-03-03
+
+### Phase 2: Domain Layer (Completed 2026-03-03)
+- [x] Deleted `AiDemo.Domain/Entities/Item.cs`
+- [x] Deleted `AiDemo.Domain/Events/ItemCreatedEvent.cs`
+- [x] Created `AiDemo.Domain/Entities/GameScore.cs` — sealed class with `Id` (Guid), `RoomId` (string), `UserId` (Guid), `DisplayName` (string), `Score` (int), `AchievedAt` (DateTime)
+- [x] `dotnet build AiDemo.Domain` → `AiDemo.Domain net10.0 succeeded` — 0 errors
+- **Build Status**: ✅ AiDemo.Domain — Phase 2 FULLY COMPLETE

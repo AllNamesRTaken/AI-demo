@@ -22,6 +22,7 @@ If the task description is missing or ambiguous, state the ambiguity clearly in 
 
 ## Workflow
 
+0. **Detect changes**: If no meaningful change is passed, return with "Status: SUCCESS" and "What changed: None".
 1. **Understand**: Read and understand the change request and read context if needed.
 2. **Verify current state**: Read relevant files before editing to confirm actual content.
 3. **Update**: Create/edit context files concisely.
