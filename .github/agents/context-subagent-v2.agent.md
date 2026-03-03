@@ -1,5 +1,5 @@
 ---
-name: context-subagent-v1
+name: context-subagent-v2
 description: 'Specialized agent for updating context and tracking files.'
 tools: ['search', 'edit', 'read', 'execute']
 ---

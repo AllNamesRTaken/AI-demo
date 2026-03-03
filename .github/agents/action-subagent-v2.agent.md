@@ -1,5 +1,5 @@
 ---
-name: action-subagent-v1
+name: action-subagent-v2
 description: 'Single-task execution agent. Receives one task + context from the orchestrator, executes it fully, and returns a concise structured result. Never manages tracking files.'
 tools: ['search', 'edit', 'read', 'execute', 'web']
 ---
