@@ -38,29 +38,31 @@ For each task, invoke the `action-subagent-v1` with this prompt structure:
 Task: <exact task text from agent-action-todo.md>
 
 Context:
-<relevant excerpt from agent-action-internal.md — decisions, file paths, dependencies
- specific to this task; omit unrelated sections>
+<relevant excerpt from context specific to this task; omit unrelated sections; might be blank if task is self-contained>
 ```
 
-Keep context excerpts focused. Do not paste the entire internal.md — extract only what the sub-agent needs for this specific task. Include relevant excerpts from `AGENTS.md`/`ARCHITECTURE.md` when the task touches architecture rules, naming conventions, or project patterns.
+Keep context excerpts focused. Do not paste the entire internal.md — extract only what the sub-agent needs for this specific task. Include relevant excerpts from `AGENTS.md` and `ARCHITECTURE.md` when the task touches architecture rules, naming conventions, or project patterns.
 
 ## Dispatching a Context Change
 
 For each context change, invoke the `context-subagent-v1` with this prompt structure:
 
 ```
-Change: <relevant changes to document>
+Change: <relevant changes to documents>
 ```
 
 Keep changes focused and concise. Include references to specific sections or lines if possible. The context-subagent will determine which files to read and update based on the change description.
 
+## How to read full files
+Read file using `read_file` in blocks of 400 lines until EOF (i.e. `read_file` returns fewer lines than requested).
+
 ## Workflow
 
 **Phase 1: Load Plan**
-1. Read `AGENTS.md` and `ARCHITECTURE.md` to understand project conventions and architecture rules
-2. Read `agent-action-internal.md` (full, once — extract per-task slices during dispatch)
-3. Read `agent-action-todo.md`, parse all unchecked tasks
-4. Invoke `manage_todo_list` with all tasks
+1. Read full `AGENTS.md` and `ARCHITECTURE.md` to understand project conventions and architecture rules. Located in project root.
+2. Read full `agent-action-internal.md` (extract per-task slices during dispatch)
+3. Read `agent-action-todo.md` until relevant tasks are read, depending on prompt.
+4. Invoke `manage_todo_list` with identified tasks
 
 **Phase 2: Orchestration Loop**
 
