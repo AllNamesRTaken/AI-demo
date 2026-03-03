@@ -17,9 +17,9 @@
 
 ## Phase 2: Domain Layer ✅ COMPLETED 2026-03-03
 
-- [x] Delete `AiDemo.Domain/Entities/Item.cs` and `Events/ItemCreatedEvent.cs`
-- [x] Create `AiDemo.Domain/Entities/GameScore.cs`
-- [x] `build-validate AiDemo.Domain` — **must be clean** (Domain has no external dependencies; Application/Infrastructure/Server still have old Item code at this stage so building the full solution would fail)
+- [ ] Delete `AiDemo.Domain/Entities/Item.cs` and `Events/ItemCreatedEvent.cs`
+- [ ] Create `AiDemo.Domain/Entities/GameScore.cs`
+- [ ] `build-validate AiDemo.Domain` — **must be clean** (Domain has no external dependencies; Application/Infrastructure/Server still have old Item code at this stage so building the full solution would fail)
 
 ## Phase 3: Application Layer
 
