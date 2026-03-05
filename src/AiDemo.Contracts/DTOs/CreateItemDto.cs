@@ -1,1 +1,6 @@
-// Removed as part of Flappy Bird migration.
+namespace AiDemo.Contracts.DTOs;
+
+public sealed record CreateItemDto(
+    string Name,
+    string Description
+);
